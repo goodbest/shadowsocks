@@ -36,6 +36,8 @@ if __name__ == '__main__':
     config = parser.parse_args()
     ips = {}
     banned = set()
+    # add your ip to whitelist
+    ip_whitelist = [127.0.0.1]
     for line in sys.stdin:
         if 'can not parse header when' in line:
             ip = line.split()[-1].replace('::ffff:', '').split(':')[0]
@@ -45,7 +47,7 @@ if __name__ == '__main__':
                 sys.stdout.flush()
             else:
                 ips[ip] += 1
-            if ip not in banned and ips[ip] >= config.count:
+            if ip not in ip_whitelist and ip not in banned and ips[ip] >= config.count:
                 banned.add(ip)
                 cmd = 'iptables -A INPUT -s %s -j DROP' % ip
                 print(cmd, file=sys.stderr)
